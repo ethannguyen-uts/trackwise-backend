@@ -3,7 +3,6 @@ import Express from "express";
 import { buildSchema } from "type-graphql";
 import "reflect-metadata";
 import { createConnection } from "typeorm";
-import { RegisterResolver } from "./modules/user/register";
 import { ApolloServerPluginLandingPageGraphQLPlayground } from "apollo-server-core";
 import session from "express-session";
 declare module "express-session" {
@@ -14,13 +13,11 @@ declare module "express-session" {
 import connectRedis from "connect-redis";
 import { redisClient } from "./redis";
 import cors from "cors";
-import { LoginResolver } from "./modules/user/login";
-import { MeResolver } from "./modules/user/me";
 
 const main = async () => {
   await createConnection();
   const schema = await buildSchema({
-    resolvers: [RegisterResolver, LoginResolver, MeResolver],
+    resolvers: [__dirname + "/modules/**/*.ts"],
     authChecker: ({ context: { req } }) => {
       // here we can read the user from context
       // and check his permission in the db against the `roles` argument
