@@ -27,7 +27,7 @@ export async function sendEmail(email: string, url: string) {
     text: "Hello world?", // plain text body
     html: `<a href=${url}>${url}</a>`, // html body
   };
-  console.log(mailOptions);
+
   // send mail with defined transport object
   const info = await transporter.sendMail(mailOptions);
 
