@@ -5,7 +5,7 @@ import { MyContext } from "../../types/MyContext";
 @Resolver()
 //we define User here to know which object we resolve from
 export class MeResolver {
-  @Query(() => User, { nullable: true })
+  @Query(() => User, { nullable: true, complexity: 5 })
   async me(@Ctx() ctx: MyContext): Promise<User | null> {
     if (!ctx.req.session!.userId) {
       return null;

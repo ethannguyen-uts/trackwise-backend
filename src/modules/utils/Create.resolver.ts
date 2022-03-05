@@ -8,7 +8,7 @@ import {
   InputType,
   UseMiddleware,
 } from "type-graphql";
-import { RegisterInput } from "./register/RegisterInput";
+import { RegisterInput } from "../user/register/RegisterInput";
 import { Product } from "../../entity/Product";
 import { Middleware } from "type-graphql/dist/interfaces/Middleware";
 
