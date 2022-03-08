@@ -16,6 +16,10 @@ export class RegisterInput extends PasswordInput {
   lastName: string;
 
   @Field()
+  @Length(3, 255)
+  username: string;
+
+  @Field()
   @IsEmail()
   @isEmailExist({ message: "Email is already exist!" })
   email: string;

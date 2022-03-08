@@ -7,6 +7,7 @@ import { MyContext } from "../../types/MyContext";
 export class MeResolver {
   @Query(() => User, { nullable: true, complexity: 5 })
   async me(@Ctx() ctx: MyContext): Promise<User | null> {
+    console.log("######", ctx.req.session);
     if (!ctx.req.session!.userId) {
       return null;
     }

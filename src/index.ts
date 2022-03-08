@@ -66,7 +66,7 @@ const main = async () => {
               );
             }
             // And here we can e.g. subtract the complexity point from hourly API calls limit.
-            console.log("Used query complexity points:", complexity);
+            //console.log("Used query complexity points:", complexity);
           },
         }),
       },
@@ -79,6 +79,7 @@ const main = async () => {
 
   const RedisStore = connectRedis(session);
   app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
+
   app.use(
     session({
       store: new RedisStore({
@@ -96,7 +97,10 @@ const main = async () => {
     })
   );
 
-  apolloServer.applyMiddleware({ app });
+  apolloServer.applyMiddleware({
+    app,
+    cors: false,
+  });
   app.listen(4000, () => {
     console.log("Server started on http://localhost:4000/graphql");
   });
