@@ -1,11 +1,20 @@
-import { Resolver, Query, Mutation, Arg, UseMiddleware } from "type-graphql";
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Arg,
+  UseMiddleware,
+  Ctx,
+} from "type-graphql";
 import * as bcrypt from "bcryptjs";
 import { User } from "../../entity/User";
 import { RegisterInput } from "./register/RegisterInput";
 import { isAuth } from "../middleware/isAuth";
 import { logger } from "../middleware/logger";
-import { createConfirmationUrl } from "../utils/createConfirmationUrl";
-import { sendEmail } from "../utils/sendEmail";
+//import { createConfirmationUrl } from "../utils/createConfirmationUrl";
+//import { sendEmail } from "../utils/sendEmail";
+import { MyContext } from "src/types/MyContext";
+import { RegisterResponse } from "./register/RegisterResponse";
 
 @Resolver()
 //we define User here to know which object we resolve from
@@ -16,20 +25,44 @@ export class RegisterResolver {
     return "Hello world!";
   }
 
-  @Mutation(() => User)
+  @Mutation(() => RegisterResponse)
   async register(
-    @Arg("data") { email, firstName, lastName, password }: RegisterInput
-  ): Promise<User> {
-    const hashedPassword = await bcrypt.hash(password, 12);
-    const user = await User.create({
-      firstName,
-      lastName,
-      email,
-      password: hashedPassword,
-    }).save();
-    //send email for confirmation
-    await sendEmail(email, await createConfirmationUrl(user.id));
+    @Arg("data") registerInput: RegisterInput,
+    @Ctx() ctx: MyContext
+  ): Promise<RegisterResponse> {
+    const { email, firstName, lastName, password, username } = registerInput;
 
-    return user;
+    const hashedPassword = await bcrypt.hash(password, 12);
+    try {
+      const user = await User.create({
+        firstName,
+        lastName,
+        email,
+        password: hashedPassword,
+        username,
+        created_at: new Date(),
+        updated_at: new Date(),
+      }).save();
+
+      if (!user) throw new Error("aa");
+
+      //send email for confirmation
+      //await sendEmail(email, await createConfirmationUrl(user.id));
+      //login
+      ctx.req.session.userId = user.id;
+
+      return {
+        user,
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        errors: [
+          {
+            error: error.message,
+          },
+        ],
+      };
+    }
   }
 }

@@ -37,4 +37,10 @@ export class User extends BaseEntity {
 
   @Column("boolean", { default: false })
   confirmed: boolean;
+
+  @Column({ type: "timestamptz", nullable: true })
+  created_at: Date;
+
+  @Column({ type: "timestamptz", nullable: true })
+  updated_at: Date;
 }

@@ -28,3 +28,25 @@ export function isEmailExist(validationOptions?: ValidationOptions) {
     });
   };
 }
+
+@ValidatorConstraint({ async: true })
+export class isUsernameExistConstraint implements ValidatorConstraintInterface {
+  validate(username: string, _args: ValidationArguments) {
+    return User.findOne({ where: { username } }).then((user) => {
+      if (user) return false;
+      return true;
+    });
+  }
+}
+
+export function isUsernameExist(validationOptions?: ValidationOptions) {
+  return function (object: Object, propertyName: string) {
+    registerDecorator({
+      target: object.constructor,
+      propertyName: propertyName,
+      options: validationOptions,
+      constraints: [],
+      validator: isUsernameExistConstraint,
+    });
+  };
+}

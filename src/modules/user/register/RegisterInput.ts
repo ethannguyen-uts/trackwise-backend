@@ -1,8 +1,7 @@
 import { IsEmail, Length } from "class-validator";
 import { PasswordInput } from "../../shared/PasswordInput";
 import { InputType, Field } from "type-graphql";
-import { isEmailExist } from "./IsEmailExist";
-//import { ClassMixin } from "../../shared/ClassMixin";
+import { isEmailExist, isUsernameExist } from "./ValidateRegisterInput";
 
 @InputType()
 //export class RegisterInput extends ClassMixin(PasswordInput) {
@@ -16,6 +15,7 @@ export class RegisterInput extends PasswordInput {
   lastName: string;
 
   @Field()
+  @isUsernameExist({ message: "Username is already exist!" })
   @Length(3, 255)
   username: string;
 
