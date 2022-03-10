@@ -18,6 +18,7 @@ import {
   fieldExtensionsEstimator,
   simpleEstimator,
 } from "graphql-query-complexity";
+import { COOKIE_NAME } from "./modules/constants/constants";
 
 const main = async () => {
   await createConnection();
@@ -85,7 +86,7 @@ const main = async () => {
       store: new RedisStore({
         client: redisClient,
       }),
-      name: "uid",
+      name: COOKIE_NAME,
       saveUninitialized: false,
       secret: "secret cat",
       resave: false,
