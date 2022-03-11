@@ -44,7 +44,7 @@ export class RegisterResolver {
         updated_at: new Date(),
       }).save();
 
-      if (!user) throw new Error("aa");
+      if (!user) throw new Error("User does not exist!");
 
       //send email for confirmation
       //await sendEmail(email, await createConfirmationUrl(user.id));
@@ -55,10 +55,10 @@ export class RegisterResolver {
         user,
       };
     } catch (error) {
-      console.log(error);
       return {
         errors: [
           {
+            field: "username",
             error: error.message,
           },
         ],

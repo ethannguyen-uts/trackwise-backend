@@ -5,33 +5,32 @@ import { forgotPasswordPrefix } from "../constants/redisPrefixes";
 import bcrypt from "bcryptjs";
 import { ChangePasswordInput } from "./changePassword/ChangePasswordInput";
 import { MyContext } from "src/types/MyContext";
+import { UserResponse } from "../shared/UserResponse";
 
 @Resolver()
 //we define User here to know which object we resolve from
 export class ChangePasswordResolver {
-  @Mutation(() => User, { nullable: true })
+  @Mutation(() => UserResponse, { nullable: true })
   async changePassword(
     @Arg("data") { token, password }: ChangePasswordInput,
     @Ctx() ctx: MyContext
-  ): Promise<User | null> {
+  ): Promise<UserResponse> {
     const userId = await redisClient.get(forgotPasswordPrefix + token);
     if (!userId) {
-      return null;
+      return { errors: [{ field: "token", error: "Token expired" }] };
     }
     const user = await User.findOne(userId);
     if (!user) {
-      return null;
+      return { errors: [{ field: "token", error: "User no longer exists" }] };
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
     User.update({ id: user.id }, { password: hashedPassword });
     redisClient.del(forgotPasswordPrefix + token);
 
-    User.update({ id: user.id }, { confirmed: true });
-
     //login the user:
     ctx.req.session.userId = user.id;
 
-    return user;
+    return { user };
   }
 }

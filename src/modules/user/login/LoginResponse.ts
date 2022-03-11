@@ -1,5 +1,5 @@
 import { Field, ObjectType } from "type-graphql";
-import { FieldError } from "../register/RegisterResponse";
+import { FieldError } from "../../shared/FieldError";
 import { User } from "../../../entity/User";
 
 @ObjectType()

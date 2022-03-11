@@ -1,5 +1,12 @@
 import { Field, ObjectType, ID, Root } from "type-graphql";
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from "typeorm";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  BaseEntity,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from "typeorm";
 
 @ObjectType()
 //make this to become a type in Graphql
@@ -38,9 +45,17 @@ export class User extends BaseEntity {
   @Column("boolean", { default: false })
   confirmed: boolean;
 
-  @Column({ type: "timestamptz", nullable: true })
+  @Field()
+  @CreateDateColumn({
+    type: "timestamp",
+    default: () => "CURRENT_TIMESTAMP(6)",
+  })
   created_at: Date;
 
-  @Column({ type: "timestamptz", nullable: true })
+  @Field()
+  @UpdateDateColumn({
+    type: "timestamp",
+    default: () => "CURRENT_TIMESTAMP(6)",
+  })
   updated_at: Date;
 }

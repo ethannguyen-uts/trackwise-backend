@@ -18,6 +18,7 @@ export class LoginResolver {
       return {
         errors: [
           {
+            field: "username",
             error: "Invalid user",
           },
         ],
@@ -28,6 +29,7 @@ export class LoginResolver {
       return {
         errors: [
           {
+            field: "password",
             error: "Invalid password",
           },
         ],
