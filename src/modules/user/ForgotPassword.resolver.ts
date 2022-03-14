@@ -22,7 +22,7 @@ export class ForgotPasswordResolver {
       "ex",
       60 * 60 * 24
     ); //1day
-    const url = `http://localhost:3000/user/change-password/${token}`;
+    const url = `http://localhost:3000/change-password/${token}`;
 
     await sendEmail(email, url);
     return true;

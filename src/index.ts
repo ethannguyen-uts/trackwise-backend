@@ -3,12 +3,12 @@ import Express from "express";
 import "reflect-metadata";
 import { createConnection } from "typeorm";
 import { ApolloServerPluginLandingPageGraphQLPlayground } from "apollo-server-core";
-import session from "express-session";
 declare module "express-session" {
   export interface SessionData {
     userId: any;
   }
 }
+import session from "express-session";
 import connectRedis from "connect-redis";
 import { redisClient } from "./redis";
 import cors from "cors";
@@ -21,7 +21,25 @@ import {
 import { COOKIE_NAME } from "./modules/constants/constants";
 
 const main = async () => {
-  await createConnection();
+  const conn = await createConnection({
+    name: "default",
+    type: "postgres",
+    host: "localhost",
+    port: 5432,
+    username: "postgres",
+    password: "postgres123",
+    database: "space",
+    synchronize: true,
+    logging: true,
+    entities: ["src/entity/*.*"],
+    migrationsTableName: "custom_migration_table",
+    migrations: ["src/migrations/*.*"],
+    cli: {
+      migrationsDir: "src/migrations",
+    },
+  });
+  await conn.runMigrations();
+
   const schema = await createSchema();
   const apolloServer = new ApolloServer({
     schema,

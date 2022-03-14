@@ -13,7 +13,7 @@ import { isAuth } from "../middleware/isAuth";
 import { logger } from "../middleware/logger";
 //import { createConfirmationUrl } from "../utils/createConfirmationUrl";
 //import { sendEmail } from "../utils/sendEmail";
-import { MyContext } from "src/types/MyContext";
+import { MyContext } from "../../types/MyContext";
 import { RegisterResponse } from "./register/RegisterResponse";
 
 @Resolver()

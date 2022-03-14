@@ -1,4 +1,4 @@
-import { MyContext } from "src/types/MyContext";
+import { MyContext } from "../../types/MyContext";
 import { Ctx, Mutation, Resolver } from "type-graphql";
 import { COOKIE_NAME } from "../constants/constants";
 

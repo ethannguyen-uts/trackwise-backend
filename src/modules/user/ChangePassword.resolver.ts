@@ -4,7 +4,7 @@ import { redisClient } from "../../redis";
 import { forgotPasswordPrefix } from "../constants/redisPrefixes";
 import bcrypt from "bcryptjs";
 import { ChangePasswordInput } from "./changePassword/ChangePasswordInput";
-import { MyContext } from "src/types/MyContext";
+import { MyContext } from "../../types/MyContext";
 import { UserResponse } from "../shared/UserResponse";
 
 @Resolver()

@@ -6,7 +6,9 @@ import {
   BaseEntity,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from "typeorm";
+import { Post } from "./Post";
 
 @ObjectType()
 //make this to become a type in Graphql
@@ -44,6 +46,9 @@ export class User extends BaseEntity {
 
   @Column("boolean", { default: false })
   confirmed: boolean;
+
+  @OneToMany(() => Post, (post) => post.creator)
+  posts: Post[];
 
   @Field()
   @CreateDateColumn({
