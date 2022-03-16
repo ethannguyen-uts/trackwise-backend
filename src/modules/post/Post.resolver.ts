@@ -12,11 +12,14 @@ import {
   FieldResolver,
   Root,
   ObjectType,
+  ID,
 } from "type-graphql";
 import { MyContext } from "../../types/MyContext";
 import { isAuth } from "../middleware/isAuth";
 import { MinLength } from "class-validator";
 import { getConnection } from "typeorm";
+import { Updoot } from "../../entity/Updoot";
+import { isGeneratorFunction } from "util/types";
 
 @InputType()
 class PostInput {
@@ -44,6 +47,83 @@ export class PostResolver {
     return root.text.slice(0, 50);
   }
 
+  @FieldResolver(() => Int, { nullable: true })
+  async voteStatus(@Root() root: Post, @Ctx() ctx: MyContext) {
+    const { userId } = ctx.req.session;
+    const updootItem = await Updoot.findOne({
+      where: { userId, postId: root.id },
+    });
+    if (!updootItem) return null;
+    else return updootItem.value;
+  }
+
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAuth)
+  async vote(
+    @Arg("postId", () => ID) postId: number,
+    @Arg("value", () => Int) value: number,
+    @Ctx() ctx: MyContext
+  ) {
+    const { userId } = ctx.req.session;
+    const isUpvote = value !== -1;
+    const point = isUpvote ? 1 : -1;
+
+    const updoot = await Updoot.findOne({ where: { postId, userId } });
+
+    //has voted and want to change their vote
+    if (updoot && updoot.value !== point) {
+      await getConnection().transaction(async (tm) => {
+        await tm.query(
+          `
+        update updoot 
+        set value = $1
+        where "postId" = $2 and "userId" = $3
+        `,
+          [point, postId, userId]
+        );
+
+        await tm.query(
+          `
+        update post 
+        set points = points + $1
+        where id = $2
+        `,
+          [point * 2, postId]
+        );
+      });
+    } else if (!updoot) {
+      //has bever voted before
+      await getConnection().transaction(async (tm) => {
+        await tm.query(`
+        insert into updoot ("userId", "postId", "value") values(${userId}, ${postId}, ${point});
+        `);
+        await tm.query(`
+        update post p
+        set points = p.points + ${point}
+        where p.id = ${postId};
+        `);
+      });
+    }
+
+    /*
+    await getConnection().query(
+      `
+    START TRANSACTION;
+    
+    insert into updoot ("userId", "postId", "value") values(${userId}, ${postId}, ${point});
+    
+    update post p
+    set points = p.points + ${point}
+    where p.id = ${postId};
+    
+    COMMIT;
+    `
+    );
+  */
+
+    return true;
+  }
+
   @Query(() => PaginatedPosts)
   async posts(
     @Arg("limit", () => Int) limit: number,
@@ -51,16 +131,46 @@ export class PostResolver {
   ): Promise<PaginatedPosts> {
     const realLimit = Math.min(50, limit);
     const additionalLimit = realLimit + 1;
+
+    const query = `SELECT p.*,
+    json_build_object(
+      'id', u.id,
+      'username', u.username,
+      'email', u.email,
+      'created_at', u.created_at,
+      'updated_at', u.updated_at
+    ) creator
+    FROM post p
+    INNER JOIN "user" u on u.id = p."creatorId"
+    ${cursor ? "WHERE p.created_at < ($2)" : ""}
+    ORDER BY p.created_at DESC
+    LIMIT $1`;
+    const queryParameters: any[] = [additionalLimit];
+    if (cursor) {
+      queryParameters.push(new Date(cursor));
+    }
+    const posts: [any] = await getConnection().query(query, queryParameters);
+    posts.map((item) => {
+      item.creator.created_at = new Date(item.creator.created_at);
+      item.creator.updated_at = new Date(item.creator.updated_at);
+    });
+
+    console.log(posts);
+    /*
     const queryBuilder = getConnection()
       .getRepository(Post)
       .createQueryBuilder("p")
-      .orderBy('"created_at"', "DESC")
+      .innerJoinAndSelect("p.creator", "u", 'u.id="p.creatorId"')
+      .orderBy('p."created_at"', "DESC")
       .take(additionalLimit);
     if (cursor)
-      queryBuilder.where("created_at < :cursor", {
+      queryBuilder.where("p.created_at < :cursor", {
         cursor: new Date(cursor),
       });
     const posts = await queryBuilder.getMany();
+
+      */
+
     return {
       posts: posts.slice(0, realLimit),
       hasMore: posts.length === additionalLimit,

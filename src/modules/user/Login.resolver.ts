@@ -37,18 +37,7 @@ export class LoginResolver {
     }
 
     ctx.req.session!.userId = user.id;
-    /*
-    if (!user.confirmed) {
-      return {
-        errors: [
-          {
-            error: "Please confirm email",
-          },
-        ],
-      };
-      //implement later
-    }
-  */
+    console.log(ctx.req.session);
     return { user };
   }
 }

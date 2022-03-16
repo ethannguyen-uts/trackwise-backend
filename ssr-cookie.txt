@@ -1,0 +1,9 @@
+//first time go to page
+ssr 
+    browser -> next.js -> graphql api
+    When it come to next js server, next js server when it send the request, it does not send the cookie along
+    => we need to tell it
+
+client side request
+    browser -> graphql api 
+    (it automatically also sends the cookies)
