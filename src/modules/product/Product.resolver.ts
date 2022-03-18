@@ -7,10 +7,13 @@ import {
   Resolver,
   UseMiddleware,
   Query,
+  Int,
+  ID,
 } from "type-graphql";
 import { isAuth } from "../middleware/isAuth";
 import { scrapeProduct } from "../../utils/scrapeProduct";
 import { SCRAPPED } from "../../types/ProductStatus";
+import { getConnection } from "typeorm";
 
 @Resolver()
 export class ProductResolver {
@@ -27,7 +30,7 @@ export class ProductResolver {
 
   @Query(() => Product)
   @UseMiddleware(isAuth)
-  async product(@Arg("id") id: string, @Ctx() ctx: MyContext) {
+  async product(@Arg("id", () => ID) id: number, @Ctx() ctx: MyContext) {
     const { userId } = ctx.req.session;
     const product = await Product.findOne({ where: { id, userId } });
     return product;
@@ -58,6 +61,25 @@ export class ProductResolver {
       return product;
     } catch (err) {
       throw new Error(err.message);
+    }
+  }
+
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAuth)
+  async deleteProduct(@Arg("id", () => ID) id: number, @Ctx() ctx: MyContext) {
+    const { userId } = ctx.req.session;
+
+    try {
+      await getConnection()
+        .createQueryBuilder()
+        .delete()
+        .from(Product)
+        .where("id = :id", { id })
+        .andWhere('"userId" = :userId', { userId })
+        .execute();
+      return true;
+    } catch (err: any) {
+      throw new Error("Can not delete product");
     }
   }
 }
