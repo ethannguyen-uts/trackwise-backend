@@ -9,10 +9,11 @@ import {
   Query,
   Int,
   ID,
+  Float,
 } from "type-graphql";
 import { isAuth } from "../middleware/isAuth";
 import { scrapeProduct } from "../../utils/scrapeProduct";
-import { SCRAPPED } from "../../types/ProductStatus";
+import { DROPPED, SCRAPPED, UPDATED } from "../../types/ProductStatus";
 import { getConnection } from "typeorm";
 
 @Resolver()
@@ -64,11 +65,46 @@ export class ProductResolver {
     }
   }
 
+  @Mutation(() => Product)
+  @UseMiddleware(isAuth)
+  async updateProductTargetPrice(
+    @Arg("id", () => ID) id: number,
+    @Arg("targetPrice", () => Float) targetPrice: number,
+    @Ctx() ctx: MyContext
+  ) {
+    const { userId } = ctx.req.session;
+    try {
+      const product = await Product.findOne(id);
+      if (!product) throw new Error("Product does not exist");
+      const url = product?.url;
+      product.status = UPDATED;
+      if (product.targetPrice !== targetPrice) {
+        product.targetPrice = targetPrice;
+      }
+
+      //Scrape the page again
+      const { price: scrapePrice } = await scrapeProduct(url);
+      //Update the current price
+      product.currentPrice = scrapePrice;
+
+      if (product.targetPrice >= scrapePrice && product.status === UPDATED) {
+        product.status = DROPPED;
+        //send email for the user //implement later
+      }
+
+      //update the product in database
+      product.save();
+
+      return product;
+    } catch (err) {
+      throw new Error(err.message);
+    }
+  }
+
   @Mutation(() => Boolean)
   @UseMiddleware(isAuth)
   async deleteProduct(@Arg("id", () => ID) id: number, @Ctx() ctx: MyContext) {
     const { userId } = ctx.req.session;
-
     try {
       await getConnection()
         .createQueryBuilder()
