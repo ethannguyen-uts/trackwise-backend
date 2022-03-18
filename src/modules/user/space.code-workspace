@@ -1,0 +1,14 @@
+{
+  "folders": [
+	{
+		"path": "../../.."
+	},
+	{
+		"path": "../../../../space-frontend"
+	},
+	{
+		"path": "../../../../GraphQL/graphql-chat"
+	}
+],
+  "settings": {}
+}

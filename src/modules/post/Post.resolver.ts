@@ -19,7 +19,6 @@ import { isAuth } from "../middleware/isAuth";
 import { MinLength } from "class-validator";
 import { getConnection } from "typeorm";
 import { Updoot } from "../../entity/Updoot";
-import { isGeneratorFunction } from "util/types";
 
 @InputType()
 class PostInput {

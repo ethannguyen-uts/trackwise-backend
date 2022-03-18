@@ -9,7 +9,7 @@ import {
   UseMiddleware,
 } from "type-graphql";
 import { RegisterInput } from "../user/register/RegisterInput";
-import { Product } from "../../entity/Product";
+
 import { Middleware } from "type-graphql/dist/interfaces/Middleware";
 
 function createResolver<T extends ClassType, X extends ClassType>(
@@ -30,20 +30,9 @@ function createResolver<T extends ClassType, X extends ClassType>(
   return BaseResolver;
 }
 
-@InputType()
-class ProductInput {
-  @Field()
-  name: string;
-}
 export const CreateUserResolver = createResolver(
   "User",
   User,
   RegisterInput,
   User
-);
-export const CreateProductResolver = createResolver(
-  "Product",
-  Product,
-  ProductInput,
-  Product
 );

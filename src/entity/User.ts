@@ -9,6 +9,8 @@ import {
   OneToMany,
 } from "typeorm";
 import { Post } from "./Post";
+import { Product } from "./Product";
+import { Updoot } from "./Updoot";
 
 @ObjectType()
 //make this to become a type in Graphql
@@ -47,8 +49,14 @@ export class User extends BaseEntity {
   @Column("boolean", { default: false })
   confirmed: boolean;
 
+  @OneToMany(() => Product, (product) => product.user)
+  products: Product[];
+
   @OneToMany(() => Post, (post) => post.creator)
   posts: Post[];
+
+  @OneToMany(() => Updoot, (updoot) => updoot.user)
+  updoots: Updoot[];
 
   @Field()
   @CreateDateColumn({
