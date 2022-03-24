@@ -7,7 +7,6 @@ import {
   Resolver,
   UseMiddleware,
   Query,
-  Int,
   ID,
   Float,
 } from "type-graphql";
@@ -15,6 +14,9 @@ import { isAuth } from "../middleware/isAuth";
 import { scrapeProduct } from "../../utils/scrapeProduct";
 import { DROPPED, SCRAPPED, UPDATED } from "../../types/ProductStatus";
 import { getConnection } from "typeorm";
+import { scrapeAllProduct as scrapeFunc } from "../../utils/scrapeAllProduct";
+import { sendPriceDroppedAnnounceEmail } from "../utils/sendPriceDroppedAnnounceEmail";
+import { User } from "../../entity/User";
 
 @Resolver()
 export class ProductResolver {
@@ -35,6 +37,12 @@ export class ProductResolver {
     const { userId } = ctx.req.session;
     const product = await Product.findOne({ where: { id, userId } });
     return product;
+  }
+
+  @Query(() => String)
+  async scrapeAllProduct() {
+    await scrapeFunc();
+    return "1";
   }
 
   @Mutation(() => Product)
@@ -81,20 +89,27 @@ export class ProductResolver {
       if (product.targetPrice !== targetPrice) {
         product.targetPrice = targetPrice;
       }
-
       //Scrape the page again
       const { price: scrapePrice } = await scrapeProduct(url);
+
       //Update the current price
       product.currentPrice = scrapePrice;
-
+      //Price dropped
       if (product.targetPrice >= scrapePrice && product.status === UPDATED) {
         product.status = DROPPED;
-        //send email for the user //implement later
       }
-
+      if (product.status == DROPPED) {
+        //send email for the user //implement
+        const user: User = await User.findOne(userId);
+        await sendPriceDroppedAnnounceEmail(
+          user.email,
+          product.name,
+          product.currentPrice,
+          product.url
+        );
+      }
       //update the product in database
-      product.save();
-
+      await product.save();
       return product;
     } catch (err) {
       throw new Error(err.message);

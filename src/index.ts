@@ -19,6 +19,10 @@ import {
   simpleEstimator,
 } from "graphql-query-complexity";
 import { COOKIE_NAME } from "./modules/constants/constants";
+import dotenv from "dotenv";
+import cron from "node-cron";
+
+dotenv.config();
 
 const main = async () => {
   const conn = await createConnection({
@@ -122,6 +126,11 @@ const main = async () => {
   });
   app.listen(4000, () => {
     console.log("Server started on http://localhost:4000/graphql");
+  });
+
+  //Scrape price every minute
+  cron.schedule("* * * * *", function () {
+    console.log("running");
   });
 };
 

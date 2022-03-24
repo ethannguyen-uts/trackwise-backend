@@ -2,8 +2,9 @@ import puppeteer from "puppeteer";
 import path from "path";
 import { v4 } from "uuid";
 import fs from "fs";
+import { ScrappedData } from "../types/ScrappedData";
 
-export const scrapeProduct = async (url: string) => {
+export const scrapeProduct = async (url: string): Promise<ScrappedData> => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   //remove blocking user agent
@@ -16,25 +17,32 @@ export const scrapeProduct = async (url: string) => {
   await page.screenshot({
     path: path.resolve(screenShotPath),
   });
-  // Get the "viewport" of the page, as reported by the page.
-  const data = await page.evaluate(() => {
-    const name: string = (
-      document.querySelector(
-        'div[class="shelfProductTile-information"] > h1'
-      ) as any
-    ).innerText;
 
-    const priceDollars = parseFloat(
-      (document.querySelector('span[class="price-dollars"]') as HTMLElement)
-        .innerText
-    );
+  const data = await page.evaluate(() => {
+    //get name
+    const nameElement = document.querySelector(
+      'div[class="shelfProductTile-information"] > h1'
+    ) as any;
+    if (!nameElement) throw new Error("Can not get product name!");
+    const name: string = nameElement.innerText as string;
+
+    //get price
+    const priceDollarsElement = document.querySelector(
+      'span[class="price-dollars"]'
+    ) as HTMLElement;
+    if (!priceDollarsElement) throw new Error("Can not get product price!");
+    const priceDollars = parseFloat(priceDollarsElement.innerText);
     const priceCents = parseFloat(
       (document.querySelector('span[class="price-cents"]') as HTMLElement)
         .innerText
     );
-    const imageUrl = document.querySelector(
+
+    //get image url
+    const imageUrlElement = document.querySelector(
       'div[class="main-image-container"] > shared-image-zoomer > img' as any
-    ).src;
+    );
+    if (!imageUrlElement) throw new Error("Can not get product image!");
+    const imageUrl = imageUrlElement.src as string;
 
     return {
       name,
@@ -45,10 +53,10 @@ export const scrapeProduct = async (url: string) => {
 
   //remove the screen shot
   fs.unlink(screenShotPath, (err) => {
-    if (err) throw err;
+    if (err) throw new Error(err.message);
   });
-
+  //close browser
   await browser.close();
 
-  return data;
+  return { ...data, url };
 };
