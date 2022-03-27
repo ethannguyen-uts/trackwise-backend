@@ -4,8 +4,6 @@ import {
   Mutation,
   Resolver,
   ClassType,
-  Field,
-  InputType,
   UseMiddleware,
 } from "type-graphql";
 import { RegisterInput } from "../user/register/RegisterInput";

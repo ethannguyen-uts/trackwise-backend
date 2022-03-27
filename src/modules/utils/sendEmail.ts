@@ -7,13 +7,13 @@ export async function sendEmail(
   subject: string = "Hello",
   body: string = ``
 ) {
+  const { SENDER_EMAIL } = process.env;
   const mailOptions = {
-    from: "OnTrack <ethannguyen.uts@outlook.com>", // sender addressZ
+    from: `OnTrack <${SENDER_EMAIL}>`, // sender addressZ
     to: email, // list of receivers
     subject: subject, // Subject line
     text: body, // plain text body
     html: body, // html body
   };
-
   await sgMail.send(mailOptions);
 }

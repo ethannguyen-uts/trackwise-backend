@@ -20,19 +20,29 @@ import {
 } from "graphql-query-complexity";
 import { COOKIE_NAME } from "./modules/constants/constants";
 import dotenv from "dotenv";
-import cron from "node-cron";
+//import cron from "node-cron";
 
 dotenv.config();
+const {
+  POSTGRES_HOST,
+  POSTGRES_DB,
+  POSTGRES_USER,
+  POSTGRES_PASSWORD,
+  POSTGRES_PORT,
+  FRONTEND_HOST,
+  FRONTEND_PORT,
+  SESSION_SECRET_KEY,
+} = process.env;
 
 const main = async () => {
   const conn = await createConnection({
     name: "default",
     type: "postgres",
-    host: "localhost",
-    port: 5432,
-    username: "postgres",
-    password: "postgres123",
-    database: "space",
+    host: POSTGRES_HOST,
+    port: POSTGRES_PORT as unknown as number,
+    username: POSTGRES_USER,
+    password: POSTGRES_PASSWORD,
+    database: POSTGRES_DB,
     synchronize: true,
     logging: true,
     entities: ["src/entity/*.*"],
@@ -53,42 +63,24 @@ const main = async () => {
       {
         requestDidStart: (): any => ({
           didResolveOperation({ request, document }: any) {
-            /**
-             * This provides GraphQL query analysis to be able to react on complex queries to your GraphQL server.
-             * This can be used to protect your GraphQL servers against resource exhaustion and DoS attacks.
-             * More documentation can be found at https://github.com/ivome/graphql-query-complexity.
-             */
             const complexity = getComplexity({
               // Our built schema
               schema,
-              // To calculate query complexity properly,
-              // we have to check only the requested operation
-              // not the whole document that may contains multiple operations
               operationName: request.operationName,
               // The GraphQL query document
               query: document,
               // The variables for our GraphQL query
               variables: request.variables,
-              // Add any number of estimators. The estimators are invoked in order, the first
-              // numeric value that is being returned by an estimator is used as the field complexity.
-              // If no estimator returns a value, an exception is raised.
               estimators: [
-                // Using fieldExtensionsEstimator is mandatory to make it work with type-graphql.
                 fieldExtensionsEstimator(),
-                // Add more estimators here...
-                // This will assign each field a complexity of 1
-                // if no other estimator returned a value.
                 simpleEstimator({ defaultComplexity: 1 }),
               ],
             });
-            // Here we can react to the calculated complexity,
-            // like compare it with max and throw error when the threshold is reached.
             if (complexity > 20) {
               throw new Error(
                 `Sorry, too complicated query! ${complexity} is over 20 that is the max allowed complexity.`
               );
             }
-            // And here we can e.g. subtract the complexity point from hourly API calls limit.
             //console.log("Used query complexity points:", complexity);
           },
         }),
@@ -97,11 +89,12 @@ const main = async () => {
   });
 
   await apolloServer.start();
-
   const app = Express();
 
   const RedisStore = connectRedis(session);
-  app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
+  app.use(
+    cors({ credentials: true, origin: `${FRONTEND_HOST}:${FRONTEND_PORT}` })
+  );
 
   app.use(
     session({
@@ -110,7 +103,7 @@ const main = async () => {
       }),
       name: COOKIE_NAME,
       saveUninitialized: false,
-      secret: "secret cat",
+      secret: SESSION_SECRET_KEY as string,
       resave: false,
       cookie: {
         httpOnly: true, //make sure javascript cant access it
@@ -125,13 +118,15 @@ const main = async () => {
     cors: false,
   });
   app.listen(4000, () => {
-    console.log("Server started on http://localhost:4000/graphql");
+    console.log("Server started on port 4000");
   });
 
   //Scrape price every minute
+  /*
   cron.schedule("* * * * *", function () {
     console.log("running");
   });
+  */
 };
 
 main();
