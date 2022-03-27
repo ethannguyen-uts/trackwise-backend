@@ -9,7 +9,7 @@ export async function sendEmail(
 ) {
   const { SENDER_EMAIL } = process.env;
   const mailOptions = {
-    from: `OnTrack <${SENDER_EMAIL}>`, // sender addressZ
+    from: `TrackWise <${SENDER_EMAIL}>`, // sender address
     to: email, // list of receivers
     subject: subject, // Subject line
     text: body, // plain text body

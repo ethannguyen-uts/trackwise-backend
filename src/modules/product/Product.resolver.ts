@@ -10,7 +10,7 @@ import {
   ID,
   Float,
 } from "type-graphql";
-import { isAuth } from "../middleware/isAuth";
+import { isAuth } from "../../middleware/isAuth";
 import { scrapeProduct } from "../../utils/scrapeProduct";
 import { DROPPED, SCRAPPED, UPDATED } from "../../types/ProductStatus";
 import { getConnection } from "typeorm";
@@ -55,7 +55,6 @@ export class ProductResolver {
     try {
       const isExist = await Product.findOne({ where: { url } });
       if (isExist) throw new Error("Product has already been screapped");
-
       const { name, imageUrl, price: scrapePrice } = await scrapeProduct(url);
       const product = await Product.create({
         name,
@@ -91,7 +90,6 @@ export class ProductResolver {
       }
       //Scrape the page again
       const { price: scrapePrice } = await scrapeProduct(url);
-
       //Update the current price
       product.currentPrice = scrapePrice;
       //Price dropped

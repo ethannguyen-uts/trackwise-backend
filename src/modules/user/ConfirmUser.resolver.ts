@@ -1,7 +1,7 @@
 import { Resolver, Mutation, Arg } from "type-graphql";
 import { User } from "../../entity/User";
 import { redisClient } from "../../redis";
-import { confirmUserPrefix } from "../constants/redisPrefixes";
+import { confirmUserPrefix } from "../../constants/redisPrefixes";
 
 @Resolver()
 //we define User here to know which object we resolve from

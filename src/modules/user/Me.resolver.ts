@@ -11,7 +11,6 @@ export class MeResolver {
     if (!ctx.req.session!.userId) {
       return null;
     }
-
     return User.findOne(ctx.req.session!.userId);
   }
 }
