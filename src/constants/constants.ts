@@ -1,1 +1,1 @@
-export const COOKIE_NAME = 'uid'
+export const COOKIE_NAME = "uid";

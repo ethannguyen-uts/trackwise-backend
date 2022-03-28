@@ -1,4 +1,3 @@
-import { ProductStatus } from "../types/ProductStatus";
 import { Field, ObjectType, ID, Float } from "type-graphql";
 import {
   Entity,
@@ -11,8 +10,8 @@ import {
 } from "typeorm";
 import { User } from "./User";
 
-@ObjectType()
 //make this to become a type in Graphql
+@ObjectType()
 @Entity()
 export class Product extends BaseEntity {
   @Field(() => ID)

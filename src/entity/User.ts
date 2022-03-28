@@ -8,12 +8,10 @@ import {
   UpdateDateColumn,
   OneToMany,
 } from "typeorm";
-import { Post } from "./Post";
 import { Product } from "./Product";
-import { Updoot } from "./Updoot";
 
-@ObjectType()
 //make this to become a type in Graphql
+@ObjectType()
 @Entity()
 export class User extends BaseEntity {
   @Field(() => ID)
@@ -51,12 +49,6 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Product, (product) => product.user)
   products: Product[];
-
-  @OneToMany(() => Post, (post) => post.creator)
-  posts: Post[];
-
-  @OneToMany(() => Updoot, (updoot) => updoot.user)
-  updoots: Updoot[];
 
   @Field()
   @CreateDateColumn({

@@ -18,36 +18,21 @@ import {
   fieldExtensionsEstimator,
   simpleEstimator,
 } from "graphql-query-complexity";
-import { COOKIE_NAME } from "./modules/constants/constants";
-import dotenv from "dotenv";
-//import cron from "node-cron";
-
-dotenv.config();
-const {
-  POSTGRES_HOST,
-  POSTGRES_DB,
-  POSTGRES_USER,
-  POSTGRES_PASSWORD,
-  POSTGRES_PORT,
-  FRONTEND_HOST,
-  FRONTEND_PORT,
-  SESSION_SECRET_KEY,
-} = process.env;
+import { COOKIE_NAME } from "./constants/constants";
+import path from "path";
+import dotsafe from "dotenv-safe";
 
 const main = async () => {
+  dotsafe.config();
   const conn = await createConnection({
     name: "default",
     type: "postgres",
-    host: POSTGRES_HOST,
-    port: POSTGRES_PORT as unknown as number,
-    username: POSTGRES_USER,
-    password: POSTGRES_PASSWORD,
-    database: POSTGRES_DB,
-    synchronize: true,
+    url: process.env.DATABASE_URL,
+    //synchronize: true,
     logging: true,
-    entities: ["src/entity/*.*"],
+    entities: [path.join(__dirname, "./entity/*.{ts,js}")],
     migrationsTableName: "custom_migration_table",
-    migrations: ["src/migrations/*.*"],
+    migrations: [path.join(__dirname, "./migrations/*.{ts,js}")],
     cli: {
       migrationsDir: "src/migrations",
     },
@@ -64,7 +49,6 @@ const main = async () => {
         requestDidStart: (): any => ({
           didResolveOperation({ request, document }: any) {
             const complexity = getComplexity({
-              // Our built schema
               schema,
               operationName: request.operationName,
               // The GraphQL query document
@@ -92,8 +76,15 @@ const main = async () => {
   const app = Express();
 
   const RedisStore = connectRedis(session);
+
+  //make cookie work in proxy environment
+  app.set("proxy", 1);
+
   app.use(
-    cors({ credentials: true, origin: `${FRONTEND_HOST}:${FRONTEND_PORT}` })
+    cors({
+      credentials: true,
+      origin: process.env.CORS_ORIGIN,
+    })
   );
 
   app.use(
@@ -103,11 +94,12 @@ const main = async () => {
       }),
       name: COOKIE_NAME,
       saveUninitialized: false,
-      secret: SESSION_SECRET_KEY as string,
+      secret: process.env.SESSION_SECRET_KEY,
       resave: false,
       cookie: {
         httpOnly: true, //make sure javascript cant access it
-        secure: process.env.NODE_ENV === "production",
+        secure: process.env.NODE_ENV === "production", // secure cookie can only be transmitted over encrypted connection
+        //domain: process.env.NODE_ENV === "production" ? ".yourdomain.com" : undefined,
         maxAge: 1000 * 60 * 60 * 24 * 1 * 365, //1 year
       },
     })
@@ -117,8 +109,8 @@ const main = async () => {
     app,
     cors: false,
   });
-  app.listen(4000, () => {
-    console.log("Server started on port 4000");
+  app.listen(parseInt(process.env.PORT), () => {
+    console.log(`Server started on port ${process.env.PORT}`);
   });
 
   //Scrape price every minute

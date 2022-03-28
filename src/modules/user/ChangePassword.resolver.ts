@@ -8,7 +8,6 @@ import { MyContext } from "../../types/MyContext";
 import { UserResponse } from "../shared/UserResponse";
 
 @Resolver()
-//we define User here to know which object we resolve from
 export class ChangePasswordResolver {
   @Mutation(() => UserResponse, { nullable: true })
   async changePassword(

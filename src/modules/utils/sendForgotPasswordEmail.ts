@@ -16,8 +16,7 @@ export const sendForgotPasswordEmail = async (
       60 * 60 * 24 //1 day
     );
 
-    const { FRONTEND_HOST, FRONTEND_PORT } = process.env;
-    const url = `${FRONTEND_HOST}:${FRONTEND_PORT}/change-password/${token}`;
+    const url = `${process.env.CORS_ORIGIN}/change-password/${token}`;
     const subject = "Password Reset";
     const body = `
     <div>

@@ -1,8 +1,8 @@
+import path from "path";
 import { buildSchema } from "type-graphql";
-
-export const createSchema = async () =>
-  await buildSchema({
-    resolvers: [__dirname + "/../modules/**/*.resolver.ts"],
+export const createSchema = async () => {
+  return await buildSchema({
+    resolvers: [path.join(__dirname, "../modules/**/*.resolver.{ts,js}")],
     authChecker: ({ context: { req } }) => {
       // here we can read the user from context
       // and check his permission in the db against the `roles` argument
@@ -13,3 +13,4 @@ export const createSchema = async () =>
       return false; // or false if access is denied
     },
   });
+};
