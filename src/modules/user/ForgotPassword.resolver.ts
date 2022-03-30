@@ -1,6 +1,9 @@
 import { Resolver, Mutation, Arg } from "type-graphql";
 import { User } from "../../entity/User";
 import { sendForgotPasswordEmail } from "../utils/sendForgotPasswordEmail";
+import { v4 } from "uuid";
+import { redisClient } from "../../redis";
+import { forgotPasswordPrefix } from "../../constants/redisPrefixes";
 
 @Resolver()
 //we define User here to know which object we resolve from
@@ -11,7 +14,16 @@ export class ForgotPasswordResolver {
     if (!user) {
       return true;
     }
-    await sendForgotPasswordEmail(user.email, user.id);
+
+    const token = v4();
+    await redisClient.set(
+      forgotPasswordPrefix + token,
+      user.id,
+      "ex",
+      60 * 60 * 24 //1 day
+    );
+
+    await sendForgotPasswordEmail(user.email, token);
     return true;
   }
 }

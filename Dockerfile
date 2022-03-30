@@ -21,12 +21,6 @@ COPY yarn.lock ./
 
 RUN yarn
 
-RUN groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
-    && mkdir -p /home/pptruser/Downloads \
-    && chown -R pptruser:pptruser /home/pptruser \
-    && chown -R pptruser:pptruser /usr/src/app/node_modules \
-    && chown -R pptruser:pptruser /usr/src/app/package.json \
-    && chown -R pptruser:pptruser /usr/src/app/yarn.lock
 
 # Bundle app source
 COPY . .
@@ -36,8 +30,17 @@ COPY .env.production .env
 
 RUN yarn build
 
+RUN groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
+    && mkdir -p /usr/src/app/home/pptruser/Downloads \
+    && chown -R pptruser:pptruser /usr/src/app \
+    && chown -R pptruser:pptruser /usr/src/app/home/pptruser \
+    && chown -R pptruser:pptruser /usr/src/app/node_modules \
+    && chown -R pptruser:pptruser /usr/src/app/package.json \
+    && chown -R pptruser:pptruser /usr/src/app/yarn.lock
+
 ENV NODE_ENV production
+
 
 EXPOSE 8080
 CMD [ "node", "dist/index.js" ]
-USER node
+USER pptruser

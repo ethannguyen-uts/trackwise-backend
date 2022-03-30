@@ -54,7 +54,7 @@ export class ProductResolver {
     const { userId } = ctx.req.session;
     try {
       const isExist = await Product.findOne({ where: { url } });
-      if (isExist) throw new Error("Product has already been screapped");
+      if (isExist) throw new Error("Product has already been scrapped!");
       const { name, imageUrl, price: scrapePrice } = await scrapeProduct(url);
       const product = await Product.create({
         name,

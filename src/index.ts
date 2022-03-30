@@ -73,12 +73,13 @@ const main = async () => {
   });
 
   await apolloServer.start();
+
   const app = Express();
 
   const RedisStore = connectRedis(session);
 
   //make cookie work in proxy environment
-  app.set("proxy", 1);
+  app.set("trust proxy", 1);
 
   app.use(
     cors({
@@ -114,11 +115,12 @@ const main = async () => {
   });
 
   //Scrape price every minute
-  /*
-  cron.schedule("* * * * *", function () {
-    console.log("running");
-  });
-  */
+
+  // cron.schedule("0 0 */12 * * *", function () {
+  //   console.log("running a task every twelve hours");
+  // });
 };
 
-main();
+main().catch((err) => {
+  console.log(err);
+});

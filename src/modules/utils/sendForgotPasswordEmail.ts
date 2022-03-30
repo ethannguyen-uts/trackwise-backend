@@ -1,21 +1,10 @@
 import { sendEmail } from "./sendEmail";
-import { v4 } from "uuid";
-import { redisClient } from "../../redis";
-import { forgotPasswordPrefix } from "../../constants/redisPrefixes";
 
 export const sendForgotPasswordEmail = async (
   userEmail: string,
-  userId: number
+  token: string
 ): Promise<void> => {
   try {
-    const token = v4();
-    await redisClient.set(
-      forgotPasswordPrefix + token,
-      userId,
-      "ex",
-      60 * 60 * 24 //1 day
-    );
-
     const url = `${process.env.CORS_ORIGIN}/change-password/${token}`;
     const subject = "Password Reset";
     const body = `

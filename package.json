@@ -44,6 +44,8 @@
     "nodemailer": "^6.7.2",
     "pg": "^8.7.3",
     "puppeteer": "^13.5.1",
+    "puppeteer-extra": "^3.2.3",
+    "puppeteer-extra-plugin-stealth": "^2.9.0",
     "reflect-metadata": "^0.1.13",
     "type-graphql": "^1.1.1",
     "typeorm": "^0.2.44",
