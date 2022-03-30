@@ -10,7 +10,7 @@ The project utilizes TypeGraphql advantages like strongly types, no over-fetchin
 
 - TypeGraphql
 - TypeScript
-- Appolo Server
+- Apollo Server
 - Express
 - Postgres
 - TypeOrm
@@ -27,7 +27,7 @@ The project utilizes TypeGraphql advantages like strongly types, no over-fetchin
 The main feature of the project is web scrapping, it uses puppeteer library to control headless Chrome browser that crawl retailers' websites to get products information like name, price, image, and url.
 Details implementation is in [scrapeProduct.ts](src/utils/scrapeProduct.ts) function:
 
-```
+```typescript
 export const scrapeProduct = async (url: string): Promise<ScrappedData> => {
   puppeteer.use(StealthPlugin());
 
@@ -100,7 +100,7 @@ The project utilize node-cron module that allows express server to schedule task
 The project use SendGrid library to send the notification email for users: [sendEmail.ts](src/modules/utils/sendEmail.ts.ts)
 If a product has its' price dropped, a email will be send to user so that they can immediately purchase the product from the shop.
 
-```
+```typescript
 export const sendPriceDroppedAnnounceEmail = async (
   userEmail: string,
   productName: string,
@@ -124,31 +124,30 @@ export const sendPriceDroppedAnnounceEmail = async (
     throw error;
   }
 };
-
 ```
 
 ### Storage with redis
 
 Session is set up to store in redis
 
-```
-  app.use(
-    session({
-      store: new RedisStore({
-        client: redisClient,
-      }),
-      name: COOKIE_NAME,
-      saveUninitialized: false,
-      secret: process.env.SESSION_SECRET_KEY,
-      resave: false,
-      cookie: {
-        httpOnly: true, //make sure javascript cant access it
-        secure: process.env.NODE_ENV === "production", // secure cookie can only be transmitted over encrypted connection
-        //domain: process.env.NODE_ENV === "production" ? ".yourdomain.com" : undefined,
-        maxAge: 1000 * 60 * 60 * 24 * 1 * 365, //1 year
-      },
-    })
-  );
+```typescript
+app.use(
+  session({
+    store: new RedisStore({
+      client: redisClient,
+    }),
+    name: COOKIE_NAME,
+    saveUninitialized: false,
+    secret: process.env.SESSION_SECRET_KEY,
+    resave: false,
+    cookie: {
+      httpOnly: true, //make sure javascript cant access it
+      secure: process.env.NODE_ENV === "production", // secure cookie can only be transmitted over encrypted connection
+      //domain: process.env.NODE_ENV === "production" ? ".yourdomain.com" : undefined,
+      maxAge: 1000 * 60 * 60 * 24 * 1 * 365, //1 year
+    },
+  })
+);
 ```
 
 Whenever a user login, session middleware will take the login data and store in redis. After that, express-session will set up a cookie (encryped key) on browser . Whenever user make a request, the cookie will be sent along with the request and store in the request object. Express-session middleware will decrypt the cookie to get the key and then make a request to redis to get the login data. This data is used for authentication purposes.
