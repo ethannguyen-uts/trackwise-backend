@@ -1,19 +1,19 @@
-import { Resolver, Mutation, Arg, Ctx } from "type-graphql";
+import { Resolver, Mutation, Arg } from "type-graphql";
 import { User } from "../../entity/User";
 import { redisClient } from "../../redis";
 import { forgotPasswordPrefix } from "../../constants/redisPrefixes";
 import bcrypt from "bcryptjs";
 import { ChangePasswordInput } from "./changePassword/ChangePasswordInput";
-import { MyContext } from "../../types/MyContext";
+//import { MyContext } from "../../types/MyContext";
 import { UserResponse } from "../shared/UserResponse";
 
 @Resolver()
 export class ChangePasswordResolver {
   @Mutation(() => UserResponse, { nullable: true })
   async changePassword(
-    @Arg("data") { token, password }: ChangePasswordInput,
-    @Ctx() ctx: MyContext
-  ): Promise<UserResponse> {
+    @Arg("data") { token, password }: ChangePasswordInput
+  ): //@Ctx() ctx: MyContext
+  Promise<UserResponse> {
     const userId = await redisClient.get(forgotPasswordPrefix + token);
     if (!userId) {
       return { errors: [{ field: "token", error: "Token expired" }] };
@@ -28,7 +28,7 @@ export class ChangePasswordResolver {
     redisClient.del(forgotPasswordPrefix + token);
 
     //login the user:
-    ctx.req.session.userId = user.id;
+    //ctx.req.session.userId = user.id;
 
     return { user };
   }

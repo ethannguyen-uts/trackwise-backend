@@ -3,8 +3,9 @@
 ## Introduction
 
 This is the backend API for Track Wise App using TypeGraphql to serve API functions for the Track Wise web front-end.
-The main purpose of the project is to practice TypeGraphql, Typescript and apply various technologies that I learned for supportting my full stack development journey.
-The project utilizes TypeGraphql advantages like strongly types, no over-fetching and under-fetching problems (compared to REST API)
+The main purpose of the project is to practice TypeGraphql, Typescript and apply various technologies that I learned to support my full-stack development journey.
+The project utilizes TypeGraphql advantages like strong types, no over-fetching, and under-fetching problems (compared to REST API) <br>.
+If you want to visit the front-end, please follow this [link](https://github.com/ethannguyen-uts/trackwise-frontend/).
 
 ## Technologies
 
@@ -24,7 +25,7 @@ The project utilizes TypeGraphql advantages like strongly types, no over-fetchin
 
 ### Web Scrapping with puppeteer
 
-The main feature of the project is web scrapping, it uses puppeteer library to control headless Chrome browser that crawl retailers' websites to get products information like name, price, image, and url.
+The main feature of the project is web scrapping, it uses the puppeteer library to control a headless Chrome browser that crawls retailers' websites to get products information like name, price, image, and URL.
 Details implementation is in [scrapeProduct.ts](src/utils/scrapeProduct.ts) function:
 
 ```typescript
@@ -91,44 +92,40 @@ export const scrapeProduct = async (url: string): Promise<ScrappedData> => {
 
 ### Auto schedule for scrapping price
 
-The project utilize node-cron module that allows express server to schedule task using full crontab syntax, specifically run [scrapeAllProduct.ts](src/utils/scrapeAllProduct.ts) function for scrapping all products that users want to track every 12 hours:
+The project utilizes the node-cron module that allows the express server to schedule a task using full crontab syntax, specifically running the [scrapeAllProduct.ts](src/utils/scrapeAllProduct.ts) function for scrapping all products that users want to track every 12 hours:
 
 `cron.schedule('0 0 */12 * * *', function(){ scrapeAllProducts() });`
 
 ### Send Email Notification with SendGrid
 
-The project use SendGrid library to send the notification email for users: [sendEmail.ts](src/modules/utils/sendEmail.ts.ts)
-If a product has its' price dropped, a email will be send to user so that they can immediately purchase the product from the shop.
+The project uses the SendGrid library to send the notification email for users: [sendEmail.ts](src/modules/utils/sendEmail.ts)
+If a product has its' price dropped, an email will be sent to the user so that they can immediately purchase the product from the shop.
 
 ```typescript
-export const sendPriceDroppedAnnounceEmail = async (
-  userEmail: string,
-  productName: string,
-  productPrice: number,
-  productUrl: string
-): Promise<void> => {
-  try {
-    const subject = `Price dropped on product: ${productName}.`;
-    const body = `
-          <div>
-          <h3>We have good news for you!</h3>
-          <span>Price dropped on product: ${productName}. The current price is AUD ${productPrice}.</span>
-          <p>Please follow the link to purchase your product: <a href=${productUrl}>${productUrl}</a></p></span>
+import sgMail from "@sendgrid/mail";
 
-          Cheers,<br>
-          The Track Wise support team.
-          </div>
-        `;
-    await sendEmail(userEmail, subject, body);
-  } catch (error) {
-    throw error;
-  }
-};
+sgMail.setApiKey(process.env.SENDGRID_API_KEY as string);
+// async..await is not allowed in global scope, must use a wrapper
+export async function sendEmail(
+  email: string,
+  subject: string = "Hello",
+  body: string = ``
+) {
+  const { SENDER_EMAIL } = process.env;
+  const mailOptions = {
+    from: `TrackWise <${SENDER_EMAIL}>`, // sender address
+    to: email, // list of receivers
+    subject: subject, // Subject line
+    text: body, // plain text body
+    html: body, // html body
+  };
+  await sgMail.send(mailOptions);
+}
 ```
 
-### Storage with redis
+### Storage with Redis
 
-Session is set up to store in redis
+The session is set up to store in Redis
 
 ```typescript
 app.use(
@@ -150,8 +147,8 @@ app.use(
 );
 ```
 
-Whenever a user login, session middleware will take the login data and store in redis. After that, express-session will set up a cookie (encryped key) on browser . Whenever user make a request, the cookie will be sent along with the request and store in the request object. Express-session middleware will decrypt the cookie to get the key and then make a request to redis to get the login data. This data is used for authentication purposes.
+Whenever a user logs in, session middleware will take the login data and store it in Redis. After that, express-session will set up a cookie (the encrypted key) on the browser. Whenever a user makes a request, the cookie will be sent along with the request and stored in the request object. Express-session middleware will decrypt the cookie to get the key and then make a request to Redis to get the login data. This data is used for authentication purposes.
 
 ## Deployment
 
-The api was deployed to https://trackwise.blankspacex.com/
+The API was deployed to https://trackwise.blankspacex.com/

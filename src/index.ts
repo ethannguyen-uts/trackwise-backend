@@ -21,6 +21,8 @@ import {
 import { COOKIE_NAME } from "./constants/constants";
 import path from "path";
 import dotsafe from "dotenv-safe";
+import cron from "node-cron";
+import { scrapeAllProduct } from "./utils/scrapeAllProduct";
 
 const main = async () => {
   dotsafe.config();
@@ -114,11 +116,10 @@ const main = async () => {
     console.log(`Server started on port ${process.env.PORT}`);
   });
 
-  //Scrape price every minute
-
-  // cron.schedule("0 0 */12 * * *", function () {
-  //   console.log("running a task every twelve hours");
-  // });
+  //Scrape price every 12 hours
+  cron.schedule("0 0 */12 * * *", function () {
+    scrapeAllProduct();
+  });
 };
 
 main().catch((err) => {

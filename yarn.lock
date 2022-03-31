@@ -771,7 +771,7 @@
 
 "@types/connect-redis@^0.0.18":
   version "0.0.18"
-  resolved "https://registry.npmjs.org/@types/connect-redis/-/connect-redis-0.0.18.tgz"
+  resolved "https://registry.yarnpkg.com/@types/connect-redis/-/connect-redis-0.0.18.tgz#f2dd17607626a741177efa22641cc2030924eda3"
   integrity sha512-iGygGbXgPIr94DEAuoluWhzre3c2/ew5NPlbW9IWvwCTXMM1YCmc7M9wpXMkYqt6kB9aO1sjZnmDzyugUu+2vQ==
   dependencies:
     "@types/express" "*"
@@ -816,7 +816,7 @@
 
 "@types/express-session@*":
   version "1.17.4"
-  resolved "https://registry.npmjs.org/@types/express-session/-/express-session-1.17.4.tgz"
+  resolved "https://registry.yarnpkg.com/@types/express-session/-/express-session-1.17.4.tgz#97a30a35e853a61bdd26e727453b8ed314d6166b"
   integrity sha512-7cNlSI8+oOBUHTfPXMwDxF/Lchx5aJ3ho7+p9jJZYVg9dVDJFh3qdMXmJtRsysnvS+C6x46k9DRYmrmCkE+MVg==
   dependencies:
     "@types/express" "*"
@@ -853,10 +853,10 @@
   dependencies:
     graphql "*"
 
-"@types/ioredis@*", "@types/ioredis@^4.28.8":
-  version "4.28.8"
-  resolved "https://registry.npmjs.org/@types/ioredis/-/ioredis-4.28.8.tgz"
-  integrity sha512-mULOyO2smtvkE1zmzRRA4P0+1UjEqusi014kXOL1q3CY0RgqkR5/wKvv+vAJbPw2Q66wPyylKeevUy+m/FaRMg==
+"@types/ioredis@*", "@types/ioredis@^4.28.10":
+  version "4.28.10"
+  resolved "https://registry.yarnpkg.com/@types/ioredis/-/ioredis-4.28.10.tgz#40ceb157a4141088d1394bb87c98ed09a75a06ff"
+  integrity sha512-69LyhUgrXdgcNDv7ogs1qXZomnfOEnSmrmMFqKgt1XMJxmoOSG/u3wYy13yACIfKuMJ8IhKgHafDO3sx19zVQQ==
   dependencies:
     "@types/node" "*"
 
@@ -927,13 +927,6 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-14.18.12.tgz#0d4557fd3b94497d793efd4e7d92df2f83b4ef24"
   integrity sha512-q4jlIR71hUpWTnGhXWcakgkZeHa3CCjcQcnuzU8M891BAWA2jHiziiWEPEkdS5pFsz7H9HJiy8BrK7tBRNrY7A==
 
-"@types/nodemailer@^6.4.4":
-  version "6.4.4"
-  resolved "https://registry.npmjs.org/@types/nodemailer/-/nodemailer-6.4.4.tgz"
-  integrity sha512-Ksw4t7iliXeYGvIQcSIgWQ5BLuC/mljIEbjf615svhZL10PE9t+ei8O9gDaD3FPCasUJn9KTLwz2JFJyiiyuqw==
-  dependencies:
-    "@types/node" "*"
-
 "@types/prettier@^2.1.5":
   version "2.4.4"
   resolved "https://registry.npmjs.org/@types/prettier/-/prettier-2.4.4.tgz"
@@ -958,7 +951,7 @@
 
 "@types/redis@^2.8.0":
   version "2.8.32"
-  resolved "https://registry.npmjs.org/@types/redis/-/redis-2.8.32.tgz"
+  resolved "https://registry.yarnpkg.com/@types/redis/-/redis-2.8.32.tgz#1d3430219afbee10f8cfa389dad2571a05ecfb11"
   integrity sha512-7jkMKxcGq9p242exlbsVzuJb57KqHRhNl4dHoQu2Y5v9bCAbtIXXH0R3HleSQW4CTOqpHIYUW3t6tpUj4BVQ+w==
   dependencies:
     "@types/node" "*"
@@ -993,7 +986,7 @@
 
 "@types/uuid@^8.3.4":
   version "8.3.4"
-  resolved "https://registry.npmjs.org/@types/uuid/-/uuid-8.3.4.tgz"
+  resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-8.3.4.tgz#bd86a43617df0594787d38b735f55c805becf1bc"
   integrity sha512-c/I8ZRb51j+pYGAu5CrFMRxqZ2ke4y2grEBO5AUjgSkSk+qT2Ea+OdWElz/OiMf5MNpn2b17kuVBwZLQJXzihw==
 
 "@types/yargs-parser@*":
@@ -3498,11 +3491,6 @@ node-releases@^2.0.2:
   version "2.0.2"
   resolved "https://registry.npmjs.org/node-releases/-/node-releases-2.0.2.tgz"
   integrity sha512-XxYDdcQ6eKqp/YjI+tb2C5WM2LgjnZrfYg4vgQt49EK268b6gYCHsBLrK2qvJo4FmCtqmKezb0WZFK4fkrZNsg==
-
-nodemailer@^6.7.2:
-  version "6.7.2"
-  resolved "https://registry.npmjs.org/nodemailer/-/nodemailer-6.7.2.tgz"
-  integrity sha512-Dz7zVwlef4k5R71fdmxwR8Q39fiboGbu3xgswkzGwczUfjp873rVxt1O46+Fh0j1ORnAC6L9+heI8uUpO6DT7Q==
 
 nodemon@^2.0.15:
   version "2.0.15"
