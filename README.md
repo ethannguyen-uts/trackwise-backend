@@ -2,10 +2,9 @@
 
 ## Introduction
 
-This is the backend API for Track Wise App using TypeGraphql to serve API functions for the Track Wise web front-end.
+This is the backend API for Track Wise App using TypeGraphql to serve API functions for the Track Wise App front-end. If you want to visit the front-end, please follow this [link](https://github.com/ethannguyen-uts/trackwise-frontend/).
 The main purpose of the project is to practice TypeGraphql, Typescript and apply various technologies that I learned to support my full-stack development journey.
 The project utilizes TypeGraphql advantages like strong types, no over-fetching, and under-fetching problems (compared to REST API) <br>.
-If you want to visit the front-end, please follow this [link](https://github.com/ethannguyen-uts/trackwise-frontend/).
 
 ## Technologies
 
@@ -149,6 +148,6 @@ app.use(
 
 Whenever a user logs in, session middleware will take the login data and store it in Redis. After that, express-session will set up a cookie (the encrypted key) on the browser. Whenever a user makes a request, the cookie will be sent along with the request and stored in the request object. Express-session middleware will decrypt the cookie to get the key and then make a request to Redis to get the login data. This data is used for authentication purposes.
 
-## Deployment
+## Deploy
 
 The API was deployed to https://trackwise.blankspacex.com/
