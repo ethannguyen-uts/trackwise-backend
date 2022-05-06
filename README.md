@@ -20,6 +20,10 @@ The project utilizes TypeGraphql advantages like strong types, no over-fetching,
 - Jest
 - Docker
 
+## API Endpoints
+
+Please follow this [link](https://blankspacex.com/index.html) for API endpoints documentation.
+
 ## Features
 
 ### Web Scrapping with puppeteer
@@ -147,6 +151,10 @@ app.use(
 ```
 
 Whenever a user logs in, session middleware will take the login data and store it in Redis. After that, express-session will set up a cookie (the encrypted key) on the browser. Whenever a user makes a request, the cookie will be sent along with the request and stored in the request object. Express-session middleware will decrypt the cookie to get the key and then make a request to Redis to get the login data. This data is used for authentication purposes.
+
+## Database Design
+
+<img src="docs/databaseDesign.png" alt="database design" width="250"/>
 
 ## Deploy
 
